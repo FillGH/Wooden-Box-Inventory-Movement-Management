@@ -7,9 +7,12 @@
 | Field | ความหมาย | สถานะ |
 |---|---|---|
 | Description | รายการ/คำอธิบายลัง | CONFIRMED |
-| SKU | รหัส SKU (ชนิดรหัสยัง TBD) | CONFIRMED |
-| Sheets per Box | จำนวนแผ่นกระจกต่อลัง | CONFIRMED |
-| Glass Size | ขนาดกระจกที่ใส่ในลัง (รูปแบบข้อมูลยัง TBD) | CONFIRMED |
+| SKU / Box Spec | รายการลังที่ระบุด้วยคุณลักษณะสเปก 5 ข้อด้านล่าง; รูปแบบรหัสเดี่ยวหรือการสร้างรหัสยัง TBD | CONFIRMED (attributes) |
+| Glass Thickness | ความหนากระจกที่ลังนี้ใช้บรรจุ เช่น EFL3, EFL4, EFL5, EFL6, EFL8 | CONFIRMED |
+| Glass Width | ความกว้างกระจก เช่น 2134, 3048 (หน่วยที่จะจัดเก็บ: TBD) | CONFIRMED |
+| Glass Height | ความสูงกระจก เช่น 2134, 1524 (หน่วยที่จะจัดเก็บ: TBD) | CONFIRMED |
+| Sheets per Box | จำนวนแผ่นกระจกต่อลัง เช่น 50, 75, 19 | CONFIRMED |
+| Box Orientation | ประเภทลัง: แนวตั้ง / แนวนอน | CONFIRMED |
 | Top Qty | จำนวนฝาบนที่รับจริง (pcs) | CONFIRMED |
 | Bottom Qty | จำนวนฝาล่างที่รับจริง (pcs) | CONFIRMED |
 | Side Qty | จำนวนฝาข้างที่รับจริง (pcs) | CONFIRMED |
@@ -20,14 +23,14 @@
 | Receiver | ชื่อผู้รับ | CONFIRMED |
 | Remark | หมายเหตุ เช่น ขาด เกิน เสียหาย หรือค้างส่ง | CONFIRMED |
 
-**Items to confirm:** Supplier (เลือก A/B), Thickness, Grade, Customer, Interleaf Material (กระดาษ/ถุงพลาสติก), Glass Width × Length, damaged quantity, photo attachment, receive time, จำนวนที่แจ้งบนเอกสาร เทียบจำนวนจริง. สิ่งเหล่านี้ถูกกล่าวถึงใน Discovery แต่ไม่ได้ยืนยันว่าทุกช่องต้องบังคับกรอก
+**Items to confirm:** Supplier (เลือก A/B), Grade, Customer, Interleaf Material (กระดาษ/ถุงพลาสติก), damaged quantity, photo attachment, receive time, จำนวนที่แจ้งบนเอกสารเทียบจำนวนจริง, และความสามารถใช้แทนกันของลังที่สเปก 5 ข้อตรงกันแต่คุณลักษณะอื่นต่างกัน. ความหนา/กว้าง/สูง/แผ่นต่อลัง/แนวตั้ง-แนวนอน ได้รับการยืนยันแล้วว่าเป็นคุณลักษณะที่ต้องระบุ แต่รูปแบบรหัส SKU และหน่วยจัดเก็บยัง TBD
 
 **Data-entry goal:** พิจารณา auto-date / auto-user จากบัญชี login, เลือกรายการที่เคยกรอก, ใช้ช่องตัวเลขขนาดใหญ่, เพิ่มหลาย SKU lines ใน Invoice เดียวกัน โดยต้องผ่านการยืนยัน flow กับพนักงานก่อน
 
 ## 2. Suggested Logical Structure (PROPOSED)
 
 - **Receipt Header:** internal_receipt_id, supplier, invoice_number, po_last4, received_at, receiver, header_remark
-- **Receipt Line:** receipt_id, line_no, SKU/box_spec, description snapshot, sheets_per_box, glass dimensions, top_qty, bottom_qty, side_qty, receive_location, line_remark
+- **Receipt Line:** receipt_id, line_no, SKU/box_spec, description snapshot, glass_thickness, glass_width, glass_height, sheets_per_box, box_orientation, top_qty, bottom_qty, side_qty, receive_location, line_remark
 - **Location:** location_id, ชื่อพื้นที่, active/inactive (อาจเป็นพื้นที่ชั่วคราว)
 - **Stock Position:** key ตาม SKU/ส่วนประกอบ/พื้นที่/สภาพ/lot หรือ receiving line ตามกติกาที่จะตกลง
 - **Movement Transaction:** movement_id, type, SKU/component, qty, from_location, to_location, operator, event_time, remark, created_at
@@ -65,7 +68,9 @@
 
 ## 5. Identity / Consistency Decisions Required
 
-- SKU เป็นรหัสของลังหรือของกระจก? ควรมี Box Spec ID อีกตัวหรือไม่?
+- **CONFIRMED:** SKU/ชนิดลังอ้างอิงสเปกกระจกที่จะบรรจุ 5 คุณลักษณะ: ความหนา, กว้าง, สูง, จำนวนแผ่น, ประเภทลัง
+- **TBD:** มีรหัส SKU ภายนอกที่กรอกเองอยู่แล้วหรือจะสร้าง Box Spec ID ภายใน?
+- **TBD:** 5 คุณลักษณะนี้เพียงพอให้ใช้วัสดุทดแทนกันหรือไม่หากเกรด ลูกค้า หรือวัสดุคั่นต่างกัน?
 - PO สี่หลักท้ายไม่ unique: ใช้คู่กับอะไรเพื่อค้นหารายการ?
 - 1 Invoice มีหลาย SKU และหลาย receiving location ได้หรือไม่?
 - จะติดตามชิ้นส่วนแยกตาม Lot/Receipt หรือรวมยอดตาม SKU + Location?
