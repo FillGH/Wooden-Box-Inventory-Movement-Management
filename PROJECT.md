@@ -52,7 +52,8 @@ PPIC และ Purchasing เป็นหน่วยงานใน **บริ
 ## 5. Assumptions / Unknowns
 
 - **KNOWN:** หนึ่งลังโดยทั่วไปใช้ Top 1, Bottom 1, Side 2 ชิ้น และ Supplier อาจส่งชิ้นส่วนแยก/หลายรอบ
-- **TBD:** SKU หมายถึงรหัสลัง หรือรหัสสินค้ากระจก, และ uniqueness ของการจับคู่ Product/Spec
+- **CONFIRMED:** SKU ในบริบทการรับลังใช้ระบุ **สเปกลังสำหรับบรรจุกระจก** จาก 5 คุณลักษณะ: (1) ความหนากระจก เช่น EFL3/EFL4/EFL5/EFL6/EFL8 (2) ความกว้างกระจก เช่น 2134/3048 (3) ความสูงกระจก เช่น 2134/1524 (4) จำนวนแผ่นต่อลัง เช่น 50/75/19 และ (5) ประเภทลัง แนวตั้ง/แนวนอน
+- **TBD:** จะมีรหัส SKU ที่ผู้ใช้กรอกเองหรือให้ระบบสร้างจากสเปก 5 ข้อ, หน่วยที่แน่นอน, และกรณีสเปก 5 ข้อตรงกันแต่ลูกค้า/เกรด/วัสดุคั่นต่างกัน ถือเป็น SKU เดียวกันหรือไม่
 - **TBD:** สามารถใช้ material เดียวกันข้ามใบส่งของ/พื้นที่/PO ได้หรือไม่
 - **TBD:** นิยามการเบิกใช้จริงกับจุดที่ถือว่า stock ถูกใช้หมด
 - **TBD:** รับชิ้นส่วนเสียหายอย่างไร, ใครอนุมัติแก้ยอด, และแก้ข้อมูลผิดอย่างไร
@@ -115,7 +116,7 @@ Data owner, restore, export policy, source of truth, retention, delete/correctio
 ## 8. Requirements
 
 ### Functional — CONFIRMED
-- **F01** บันทึกรับเข้า: Description, SKU, จำนวนแผ่นต่อลัง, ขนาดกระจก, Top/Bottom/Side Qty, PO 4 ตัวท้าย, Invoice Number, วันที่รับ, พื้นที่รับลง, ชื่อผู้รับ, Remark
+- **F01** บันทึกรับเข้า: Description, SKU/สเปกลัง (ความหนากระจก EFL3/EFL4/EFL5/EFL6/EFL8, ความกว้าง, ความสูง, จำนวนแผ่นต่อลัง, ประเภทลังแนวตั้ง/แนวนอน), Top/Bottom/Side Qty, PO 4 ตัวท้าย, Invoice Number, วันที่รับ, พื้นที่รับลง, ชื่อผู้รับ, Remark
 - **F02** รองรับจำนวนรับจริงไม่ครบส่วนประกอบ และการรับหลายรอบ
 - **F03** บันทึก Stock Movement แบบสั้นและตรวจสอบย้อนหลังได้ (ชนิดย่อยและบทบาทผู้บันทึก: TBD)
 - **F04** ค้นดูยอดคงเหลือและพื้นที่ปัจจุบัน
@@ -135,6 +136,7 @@ Data owner, restore, export policy, source of truth, retention, delete/correctio
 ## 9. Acceptance Criteria — Draft (NOT TESTED)
 
 - **AC01:** บันทึกจำนวน Top, Bottom, Side ไม่เท่ากันได้ โดยไม่ตีความว่าครบตามจำนวนลังที่สั่ง
+- **AC01a (Draft):** ข้อมูล SKU/สเปกลังแสดงความหนา ความกว้าง ความสูง จำนวนแผ่นต่อลัง และประเภทลังเป็นคนละคุณลักษณะ ไม่สับสนระหว่างสเปกกระจกกับจำนวนชิ้นส่วนที่รับ
 - **AC02:** ค้นหารายการแสดงจำนวน usable ที่ถูกต้องตาม transactions และ Location
 - **AC03:** Move 1 รายการจาก A ไป B ทำยอดรวมคงเดิม แต่เปลี่ยนยอดตาม Location
 - **AC04:** Issue 1 รายการหักจำนวนถูกต้อง; ไม่บันทึกยอดซ้ำหากกดยืนยันซ้ำ
@@ -184,12 +186,14 @@ Data owner, restore, export policy, source of truth, retention, delete/correctio
 | D-006 | ผู้เกี่ยวข้อง V1 มี Receiver, Supplier, Supervisor, Forklift | CONFIRMED | 2026-10-28 |
 | D-007 | ถ้าเลือก Web App ให้ใช้ Cloudflare | CONFIRMED (conditional) | 2026-10-28 |
 | D-008 | ใช้ ledger, offline queue และ RBAC แบบใด | PROPOSED / TBD | 2026-10-28 |
+| D-009 | SKU/สเปกลังระบุด้วย 5 คุณลักษณะ: ความหนา กว้าง สูง จำนวนแผ่นต่อลัง และประเภทแนวตั้ง/แนวนอน (รูปแบบรหัส/ความเป็นเอกลักษณ์ยัง TBD) | CONFIRMED (attributes) | 2026-10-28 |
 
 ## 14. Change History
 
 | Version | Change | Date |
 |---|---|---|
 | v0.1 draft | ย้ายจาก generic starter เป็น project-specific DEFINE documentation พร้อม scope boundary | 2026-10-28 |
+| v0.1 draft | ชี้แจงความหมาย SKU และสเปกลัง 5 คุณลักษณะจากเจ้าของโครงการ | 2026-10-28 |
 
 ## Decision Gates
 
